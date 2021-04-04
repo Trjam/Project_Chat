@@ -1,9 +1,8 @@
 package client;
 
 import java.io.*;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
+
 
 public class client {
     private static final int PORT = 8189;
