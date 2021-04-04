@@ -3,43 +3,79 @@ package server;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server {
     private static final int PORT=8189;
-    private static DataInputStream in;
-    private static DataOutputStream out;
-    private static final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    private final List<ClientHandler> clients;
+    private final AuthService authService;
+
+    private static ServerSocket server;
+    private static Socket socket;
 
 
-    public static void main(String[] args) throws IOException {
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+    public Server() {
+        clients = new CopyOnWriteArrayList<>();
+        authService = new SimpleAuthService();
+
+        try {
+            server = new ServerSocket(PORT);
             System.out.println("Server started");
-            try (Socket socket = serverSocket.accept()) {
-                System.out.println("Client connected");
 
-                in = new DataInputStream(socket.getInputStream());
-                out = new DataOutputStream(socket.getOutputStream());
+            while(true){
+                socket = server.accept();
+                System.out.println(socket.getLocalSocketAddress());
+                System.out.println("Client connect: "+ socket.getRemoteSocketAddress());
+                new ClientHandler(this, socket);
+            }
 
-                new Thread(()->{
-
-                        while (true) {
-                            try {
-                                out.writeUTF(reader.readLine());
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                }).start();
-
-                while (true) {
-                    String client = in.readUTF();
-                        if (!client.equals(""))
-                        System.out.println("Client: " + client);
-                }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                server.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
+
+    public void broadcastMsg (ClientHandler sender, String msg){
+        String message = String.format("%s : %s", sender.getNickname(), msg);
+
+        for (ClientHandler c : clients) {
+                c.sendMsg(message);
+            }
+        }
+
+    public void subscribe (ClientHandler clientHandler){
+        clients.add(clientHandler);
+    }
+
+    public void unsubscribe (ClientHandler clientHandler){
+        clients.remove(clientHandler);
+    }
+
+    public AuthService getAuthService () {
+        return authService;
+    }
+
+    //TODO подумать как бы вкрячить отбивку, если нет онлайн того, кому шепчем
+    public void whisperingMsg (ClientHandler sender, String nickName, String msg){
+        String message = String.format("%s whispering: %s", sender.getNickname(), msg);
+
+        for (ClientHandler c : clients) {
+            if (c.getNickname().equals(nickName)||c.getNickname().equals(sender.getNickname())) {
+                c.sendMsg(message);
+            }
+        }
+    }
+
 }
+
