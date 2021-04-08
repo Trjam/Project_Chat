@@ -1,0 +1,13 @@
+@import "button.css";
+@import "textarea.css";
+@import "textfield.css";
+
+.root {
+  -fx-font-size: 13;
+  -fx-background-color:#363646;
+}
+
+
+
+
+
