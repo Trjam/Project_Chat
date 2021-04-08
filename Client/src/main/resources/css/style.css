@@ -7,6 +7,13 @@
   -fx-background-color:#363646;
 }
 
+.text-id {
+    -fx-font-smoothing-type: lcd;
+    -fx-fill: white;
+    -fx-font-size: 15;
+    -fx-font-weight:bold;
+}
+
 
 
 

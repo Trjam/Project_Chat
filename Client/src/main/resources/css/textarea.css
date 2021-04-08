@@ -3,3 +3,8 @@
     -fx-background-color:#000000;
     -fx-font-size:16;
 }
+#loginTextArea {
+    -fx-control-inner-background:#363640;
+    -fx-background-color:#000000;
+    -fx-text-fill:#FAFAFA;
+}
