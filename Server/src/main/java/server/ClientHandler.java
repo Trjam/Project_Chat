@@ -82,45 +82,48 @@ public class ClientHandler {
                     try {
                         while (true) {
                             String str = in.readUTF();
-                            //выход
-                            if (str.equals("/q")) {
-                                out.writeUTF("/q");
-                                break;
-                            }
-                            //смена ника
-                            if (str.equals("/chgnick")) {
-                                String[] token = str.split("\\s+", 3);
-                                if (token.length<3) {
-                                    sendMsg("/chgnick Заполните все поля.");
-                                    continue;
-                                }
 
-                                if (server.getAuthService().checkPassword(token[2], getLogin())) {
-                                    if (server.getAuthService().changeNick(token[1], getLogin())) {
-                                        sendMsg("/chgnick Вы сменили никнейм на " + token[1]);
-                                        server.broadcastClientList();
-                                    } else {
-                                        sendMsg("/chgnick Никнейм " + token[1] + " уже занят, попробуйте придумать другой.");
+                            if (str.startsWith("/")) {
+                                //выход
+                                if (str.equals("/q")) {
+                                    out.writeUTF("/q");
+                                    break;
+                                }
+                                //смена ника
+                                if (str.startsWith("/chgnick")) {
+                                    String[] token = str.split("\\s+", 3);
+                                    if (token.length < 3) {
+                                        sendMsg("/chgnick Заполните все поля.");
+                                        continue;
                                     }
-                                } else {
-                                    sendMsg("/chgnick Вы ввели не верный пароль.");
+
+                                    if (server.getAuthService().checkPassword(token[2], getLogin())) {
+                                        if (server.getAuthService().changeNick(token[1], getLogin())) {
+                                            sendMsg("/chgnick Вы сменили никнейм на " + token[1]);
+                                            server.broadcastClientList();
+                                        } else {
+                                            sendMsg("/chgnick Никнейм " + token[1] + " уже занят, попробуйте придумать другой.");
+                                        }
+                                    } else {
+                                        sendMsg("/chgnick Вы ввели не верный пароль.");
+                                    }
                                 }
-                            }
-                            //приватные сообщения
-                            if (str.startsWith("/w")) {
-                                String[] whisp = str.split("\\s+", 3);
-                                //костыль чтоб не падало при "/w login"
-                                switch (whisp.length) {
-                                    case 2:
-                                        server.whisperingMsg(this, whisp[1], "o/");
-                                        break;
-                                    case 3:
-                                        server.whisperingMsg(this, whisp[1], whisp[2]);
-                                        break;
-                                    default:
-                                        server.whisperingMsg(this, whisp[1], "Шепнуть не вышло, проверте формат сообщения.");
+                                //Приватные сообщения
+                                if (str.startsWith("/w")) {
+                                    String[] whisp = str.split("\\s+", 3);
+                                    //костыль чтоб не падало при "/w login"
+                                    switch (whisp.length) {
+                                        case 2:
+                                            server.whisperingMsg(this, whisp[1], "o/");
+                                            break;
+                                        case 3:
+                                            server.whisperingMsg(this, whisp[1], whisp[2]);
+                                            break;
+                                        default:
+                                            server.whisperingMsg(this, whisp[1], "Шепнуть не вышло, проверте формат сообщения.");
+                                    }
                                 }
-                            } else
+                            }else
                                 //Сообщения всем
                                 server.broadcastMsg(this, str);
                         }

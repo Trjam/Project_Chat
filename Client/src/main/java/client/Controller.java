@@ -130,12 +130,11 @@ public class Controller implements Initializable {
                             loginTextArea.appendText(str + "\n");
                         }
                     }
-                    //цикл работы
 
+                    //цикл работы
                     textArea.setWrapText(true);
                     textArea.appendText("Добро пожаловать в чат" + "\nЕсли вы хотите сменить свой никнейм, " +
                             "то кликните по нему в списке пользователей справа.\n");
-
                     while (authenticated) {
                         String str = in.readUTF();
 
