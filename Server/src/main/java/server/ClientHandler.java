@@ -48,6 +48,7 @@ public class ClientHandler {
                                     server.subscribe(this);
                                     System.out.println("Client authenticated. nick: " + nickname +
                                             " Address: " + socket.getRemoteSocketAddress());
+
                                     break;
                                 } else {
                                     sendMsg("С этим логином уже авторизовались");

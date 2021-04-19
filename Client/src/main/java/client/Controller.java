@@ -145,6 +145,7 @@ public class Controller implements Initializable {
                                 });
                             }
                             if (str.startsWith("/logout")) {
+                                setAuthenticated(false);
                                 socket.close();
                                 loginTextArea.appendText("Session is over. Logout.");
                             }
