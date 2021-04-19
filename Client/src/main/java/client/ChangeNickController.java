@@ -10,11 +10,11 @@ public class ChangeNickController {
 
 
     @FXML
-    public PasswordField passwordField;
+    private PasswordField passwordField;
     @FXML
-    public TextField nickField;
+    private TextField nickField;
     @FXML
-    private TextArea textArea;
+    private  TextArea textArea;
 
     @FXML
     public void tryChangeNick() {
@@ -35,5 +35,10 @@ public class ChangeNickController {
 
     public void setController(Controller controller) {
         this.controller = controller;
+    }
+
+    public  void setTextArea(String str) {
+        textArea.clear();
+        textArea.appendText(str);
     }
 }

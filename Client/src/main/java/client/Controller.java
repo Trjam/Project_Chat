@@ -158,11 +158,15 @@ public class Controller implements Initializable {
                                 timeout = true;
                                 break;
                             }
+                            if (str.startsWith("/chgnick ")) {
+                                String[] token = str.split("\\s+",2 );
+                                changeNickController.setTextArea(token[1]);
+                            }
                             if (str.startsWith("/chgnick_ok")) {
-                                changeNickController.showResult("/reg_ok");
+                                changeNickController.showResult("/chgnick_ok");
                             }
                             if (str.startsWith("/chgnick_no")) {
-                                changeNickController.showResult("/reg_no");
+                                changeNickController.showResult("/chgnick_no");
                             }
                         } else {
                             textArea.appendText(str + "\n");
