@@ -84,6 +84,7 @@ public class ClientHandler {
                             String str = in.readUTF();
 
                             if (str.startsWith("/")) {
+
                                 //выход
                                 if (str.equals("/q")) {
                                     out.writeUTF("/q");
@@ -92,14 +93,15 @@ public class ClientHandler {
                                 //смена ника
                                 if (str.startsWith("/chgnick")) {
                                     String[] token = str.split("\\s+", 3);
-                                    if (token.length < 3) {
+                                    if (token.length < 3 || token[2].equals("")) {
                                         sendMsg("/chgnick Заполните все поля.");
                                         continue;
                                     }
-
-                                    if (server.getAuthService().checkPassword(token[2], getLogin())) {
+                                    //возможно проверка пароля при смене ника излишне, но пусть будет
+                                    else if (server.getAuthService().checkPassword(token[2], getLogin())) {
                                         if (server.getAuthService().changeNick(token[1], getLogin())) {
                                             sendMsg("/chgnick Вы сменили никнейм на " + token[1]);
+                                            this.nickname=token[1];
                                             server.broadcastClientList();
                                         } else {
                                             sendMsg("/chgnick Никнейм " + token[1] + " уже занят, попробуйте придумать другой.");

@@ -16,6 +16,7 @@ public class ChangeNickController {
     @FXML
     private  TextArea textArea;
 
+
     @FXML
     public void tryChangeNick() {
 
@@ -38,6 +39,7 @@ public class ChangeNickController {
     }
 
     public  void setTextArea(String str) {
+        textArea.setWrapText(true);
         textArea.clear();
         textArea.appendText(str);
     }

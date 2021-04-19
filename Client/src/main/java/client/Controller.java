@@ -153,20 +153,26 @@ public class Controller implements Initializable {
                                     }
                                 });
                             }
+                            //логаут при таймауте сессии
                             if (str.startsWith("/logout")) {
                                 timeout = true;
                                 break;
                             }
+
+
                             if (str.startsWith("/chgnick ")) {
                                 String[] token = str.split("\\s+",2 );
                                 changeNickController.setTextArea(token[1]);
+                                setTitle(nickname);
                             }
+                            //TODO подумать, а нужны ли эти, если с сервера все что надо приходит,
+/*
                             if (str.startsWith("/chgnick_ok")) {
                                 changeNickController.showResult("/chgnick_ok");
                             }
                             if (str.startsWith("/chgnick_no")) {
                                 changeNickController.showResult("/chgnick_no");
-                            }
+                            }*/
                         } else {
                             textArea.appendText(str + "\n");
                         }
@@ -303,14 +309,20 @@ public class Controller implements Initializable {
         }
     }
 
-    public void changeNickname(String password, String nickname) {
+    public void changeNickname(String nickname, String password) {
 
         String msg = String.format("/chgnick %s %s", nickname, password );
         try {
             out.writeUTF(msg);
+
+            //TODO поменять костыль на что нибудь нормальное
+            this.nickname=nickname;
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
+
 }
 
