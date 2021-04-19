@@ -60,7 +60,10 @@ public class Controller implements Initializable {
 
     private Stage stage;
     private Stage regStage;
+    private Stage changeNicknameStage;
     private RegController regController;
+    private ChangeNickController changeNickController;
+    private boolean timeout = false;
 
     public void setAuthenticated(boolean authenticated) {
         this.authenticated = authenticated;
@@ -109,6 +112,7 @@ public class Controller implements Initializable {
                         if (str.startsWith("/")) {
                             if (str.equals("/q")) {
                                 System.out.println("disconnect");
+                                out.writeUTF("/q");
                                 break;
                             }
                             if (str.startsWith("/auth_ok")) {
@@ -127,11 +131,17 @@ public class Controller implements Initializable {
                         }
                     }
                     //цикл работы
+
+                    textArea.setWrapText(true);
+                    textArea.appendText("Добро пожаловать в чат" + "\nЕсли вы хотите сменить свой никнейм, " +
+                            "то кликните по нему в списке пользователей справа.\n");
+
                     while (authenticated) {
                         String str = in.readUTF();
 
                         if (str.startsWith("/")) {
                             if (str.equals("/q")) {
+                                out.writeUTF("/q");
                                 break;
                             }
                             // Обновление списка клиентов
@@ -145,9 +155,14 @@ public class Controller implements Initializable {
                                 });
                             }
                             if (str.startsWith("/logout")) {
-                                setAuthenticated(false);
-                                socket.close();
-                                loginTextArea.appendText("Session is over. Logout.");
+                                timeout = true;
+                                break;
+                            }
+                            if (str.startsWith("/chgnick_ok")) {
+                                changeNickController.showResult("/reg_ok");
+                            }
+                            if (str.startsWith("/chgnick_no")) {
+                                changeNickController.showResult("/reg_no");
                             }
                         } else {
                             textArea.appendText(str + "\n");
@@ -159,6 +174,10 @@ public class Controller implements Initializable {
                     setAuthenticated(false);
                     try {
                         socket.close();
+                        if (timeout) {
+                            timeout = false;
+                            loginTextArea.appendText("Session is over. Logout.");
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -210,8 +229,16 @@ public class Controller implements Initializable {
 
     public void clickClientList() {
         String receiver = clientList.getSelectionModel().getSelectedItem();
-        //textField.requestFocus();
-        textField.setText("/w " + receiver + " ");
+        if (receiver.equals(nickname)) {
+            if (changeNicknameStage == null) {
+                createChangeNicknameWindow();
+            }
+            Platform.runLater(() -> {
+                changeNicknameStage.show();
+            });
+        } else {
+            textField.setText("/w " + receiver + " ");
+        }
     }
 
     private void createRegWindow() {
@@ -233,6 +260,25 @@ public class Controller implements Initializable {
         }
     }
 
+    private void createChangeNicknameWindow() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/changeNickname.fxml"));
+            Parent root = fxmlLoader.load();
+            changeNicknameStage = new Stage();
+            changeNicknameStage.setTitle("Open chat change nickname");
+            changeNicknameStage.setScene(new Scene(root, 400, 320));
+
+            changeNicknameStage.initModality(Modality.APPLICATION_MODAL);
+            changeNicknameStage.initStyle(StageStyle.UTILITY);
+
+            changeNickController = fxmlLoader.getController();
+            changeNickController.setController(this);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void tryToReg() {
         if (regStage == null) {
             createRegWindow();
@@ -247,6 +293,16 @@ public class Controller implements Initializable {
             connect();
         }
         String msg = String.format("/reg %s %s %s", login, password, nickname);
+        try {
+            out.writeUTF(msg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void changeNickname(String password, String nickname) {
+
+        String msg = String.format("/chgnick %s %s", nickname, password );
         try {
             out.writeUTF(msg);
         } catch (IOException e) {
