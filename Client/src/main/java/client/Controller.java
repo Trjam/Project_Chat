@@ -57,6 +57,8 @@ public class Controller implements Initializable {
 
     private boolean authenticated;
     private String nickname;
+    private String tempnick;
+
 
     private Stage stage;
     private Stage regStage;
@@ -163,6 +165,8 @@ public class Controller implements Initializable {
                             if (str.startsWith("/chgnick ")) {
                                 String[] token = str.split("\\s+",2 );
                                 changeNickController.setTextArea(token[1]);
+                                //часть костыля... таки с сервера не все что нужно приходит
+                                nickname=tempnick;
                                 setTitle(nickname);
                             }
                             //TODO подумать, а нужны ли эти, если с сервера все что надо приходит,
@@ -316,7 +320,7 @@ public class Controller implements Initializable {
             out.writeUTF(msg);
 
             //TODO поменять костыль на что нибудь нормальное
-            this.nickname=nickname;
+            tempnick=nickname;
         } catch (IOException e) {
             e.printStackTrace();
         }
