@@ -57,6 +57,7 @@ public class Controller implements Initializable {
 
     private boolean authenticated;
     private String nickname;
+    private String login;
 
     private Stage stage;
     private Stage regStage;
@@ -74,6 +75,11 @@ public class Controller implements Initializable {
 
         if (!authenticated) {
             nickname = "";
+            try {
+                Logs.writerClose();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         setTitle(nickname);
         textArea.clear();
@@ -108,7 +114,6 @@ public class Controller implements Initializable {
                     //цикл аутентификации
                     while (true) {
                         String str = in.readUTF();
-
                         if (str.startsWith("/")) {
                             if (str.equals("/q")) {
                                 System.out.println("disconnect");
@@ -116,8 +121,15 @@ public class Controller implements Initializable {
                                 break;
                             }
                             if (str.startsWith("/auth_ok")) {
-                                nickname = str.split("\\s+")[1];
+                                String[] token = str.split("\\s+",3 );
+                                nickname = token[1];
+                                login = token[2];
                                 setAuthenticated(true);
+                                textArea.setWrapText(true);
+                                textArea.appendText("Добро пожаловать в чат" + "\nЕсли вы хотите сменить свой никнейм, " +
+                                        "то кликните по нему в списке пользователей справа.\n");
+                                //100 записей из лога передаем в поле чата
+                                textArea.appendText(Logs.readLast100FromLog(login));
                                 break;
                             }
                             if (str.startsWith("/reg_ok")) {
@@ -132,12 +144,8 @@ public class Controller implements Initializable {
                     }
 
                     //цикл работы
-                    textArea.setWrapText(true);
-                    textArea.appendText("Добро пожаловать в чат" + "\nЕсли вы хотите сменить свой никнейм, " +
-                            "то кликните по нему в списке пользователей справа.\n");
                     while (authenticated) {
                         String str = in.readUTF();
-
                         if (str.startsWith("/")) {
                             if (str.equals("/q")) {
                                 out.writeUTF("/q");
@@ -170,7 +178,9 @@ public class Controller implements Initializable {
                                 setTitle(nickname);
                             }
                         } else {
+                            //сообщения с сервера передаем в поле чата + пишем в лог
                             textArea.appendText(str + "\n");
+                            Logs.writeToLog( login, str);
                         }
                     }
                 } catch (IOException e) {
@@ -314,8 +324,5 @@ public class Controller implements Initializable {
             e.printStackTrace();
         }
     }
-
-
-
 }
 
