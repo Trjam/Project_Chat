@@ -1,0 +1,32 @@
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+
+<?import javafx.scene.layout.VBox?>
+<?import java.net.URL?>
+<?import javafx.scene.control.PasswordField?>
+
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Text?>
+<VBox fx:controller="client.ChangeNickController"
+      xmlns:fx="http://javafx.com/fxml" alignment="center" spacing="10">
+    <stylesheets>
+        <URL value="@/css/style.css"/>
+    </stylesheets>
+
+    <HBox alignment="CENTER" spacing="7">
+        <Text layoutX="238.0" layoutY="141.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-id" text="Nickname:"/>
+        <TextField fx:id="nickField" HBox.hgrow="ALWAYS" promptText="Nickname" maxWidth="256"/>
+    </HBox>
+    <HBox alignment="CENTER" spacing="10">
+        <Text layoutX="238.0" layoutY="141.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-id" text="Password:"/>
+        <PasswordField fx:id="passwordField" HBox.hgrow="ALWAYS" promptText="Password" maxWidth="256" onAction="#tryChangeNick"/>
+    </HBox>
+
+
+    <TextArea fx:id="textArea" maxWidth="340" maxHeight="90" editable="false"/>
+
+    <Button text="Change Nickname" minWidth="100" onAction="#tryChangeNick"/>
+
+
+</VBox>
