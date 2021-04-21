@@ -57,8 +57,6 @@ public class Controller implements Initializable {
 
     private boolean authenticated;
     private String nickname;
-    private String tempnick;
-
 
     private Stage stage;
     private Stage regStage;
@@ -312,9 +310,6 @@ public class Controller implements Initializable {
         String msg = String.format("/chgnick %s %s", nickname, password );
         try {
             out.writeUTF(msg);
-
-            //TODO поменять костыль на что нибудь нормальное
-            tempnick=nickname;
         } catch (IOException e) {
             e.printStackTrace();
         }
