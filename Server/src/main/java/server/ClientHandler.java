@@ -100,7 +100,7 @@ public class ClientHandler {
                                     //возможно проверка пароля при смене ника излишне, но пусть будет
                                     else if (server.getAuthService().checkPassword(token[2], getLogin())) {
                                         if (server.getAuthService().changeNick(token[1], getLogin())) {
-                                            sendMsg("/chgnick Вы сменили никнейм на " + token[1]);
+                                            sendMsg("/chgnick_ok " + token[1] + " Вы сменили никнейм на " + token[1]);
                                             this.nickname=token[1];
                                             server.broadcastClientList();
                                         } else {

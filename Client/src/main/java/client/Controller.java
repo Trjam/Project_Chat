@@ -160,23 +160,17 @@ public class Controller implements Initializable {
                                 timeout = true;
                                 break;
                             }
-
-
+                            //Смена ника
                             if (str.startsWith("/chgnick ")) {
                                 String[] token = str.split("\\s+",2 );
                                 changeNickController.setTextArea(token[1]);
-                                //часть костыля... таки с сервера не все что нужно приходит
-                                nickname=tempnick;
+                            }
+                            if (str.startsWith("/chgnick_ok")) {
+                                String[] token = str.split("\\s+",3 );
+                                changeNickController.setTextArea(token[2]);
+                                nickname=token[1];
                                 setTitle(nickname);
                             }
-                            //TODO подумать, а нужны ли эти, если с сервера все что надо приходит,
-/*
-                            if (str.startsWith("/chgnick_ok")) {
-                                changeNickController.showResult("/chgnick_ok");
-                            }
-                            if (str.startsWith("/chgnick_no")) {
-                                changeNickController.showResult("/chgnick_no");
-                            }*/
                         } else {
                             textArea.appendText(str + "\n");
                         }
