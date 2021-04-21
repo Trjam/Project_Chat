@@ -25,7 +25,7 @@ public class Logs {
         createLog(login);
         BufferedReader reader= new BufferedReader(new FileReader("Logs/Log_" + login + ".txt"));
         LinkedList<String> lines = new LinkedList<>();
-        String line = null;
+        String line;
         while ((line = reader.readLine())!=null) {
             lines.add(line);
         }
