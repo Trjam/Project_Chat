@@ -57,8 +57,7 @@ public class Controller implements Initializable {
 
     private boolean authenticated;
     private String nickname;
-    private String tempnick;
-
+    private String login;
 
     private Stage stage;
     private Stage regStage;
@@ -76,6 +75,11 @@ public class Controller implements Initializable {
 
         if (!authenticated) {
             nickname = "";
+            try {
+                Logs.writerClose();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         setTitle(nickname);
         textArea.clear();
@@ -110,7 +114,6 @@ public class Controller implements Initializable {
                     //цикл аутентификации
                     while (true) {
                         String str = in.readUTF();
-
                         if (str.startsWith("/")) {
                             if (str.equals("/q")) {
                                 System.out.println("disconnect");
@@ -118,8 +121,15 @@ public class Controller implements Initializable {
                                 break;
                             }
                             if (str.startsWith("/auth_ok")) {
-                                nickname = str.split("\\s+")[1];
+                                String[] token = str.split("\\s+",3 );
+                                nickname = token[1];
+                                login = token[2];
                                 setAuthenticated(true);
+                                textArea.setWrapText(true);
+                                textArea.appendText("Добро пожаловать в чат" + "\nЕсли вы хотите сменить свой никнейм, " +
+                                        "то кликните по нему в списке пользователей справа.\n");
+                                //100 записей из лога передаем в поле чата
+                                textArea.appendText(Logs.readLast100FromLog(login));
                                 break;
                             }
                             if (str.startsWith("/reg_ok")) {
@@ -134,12 +144,8 @@ public class Controller implements Initializable {
                     }
 
                     //цикл работы
-                    textArea.setWrapText(true);
-                    textArea.appendText("Добро пожаловать в чат" + "\nЕсли вы хотите сменить свой никнейм, " +
-                            "то кликните по нему в списке пользователей справа.\n");
                     while (authenticated) {
                         String str = in.readUTF();
-
                         if (str.startsWith("/")) {
                             if (str.equals("/q")) {
                                 out.writeUTF("/q");
@@ -160,25 +166,21 @@ public class Controller implements Initializable {
                                 timeout = true;
                                 break;
                             }
-
-
+                            //Смена ника
                             if (str.startsWith("/chgnick ")) {
                                 String[] token = str.split("\\s+",2 );
                                 changeNickController.setTextArea(token[1]);
-                                //часть костыля... таки с сервера не все что нужно приходит
-                                nickname=tempnick;
+                            }
+                            if (str.startsWith("/chgnick_ok")) {
+                                String[] token = str.split("\\s+",3 );
+                                changeNickController.setTextArea(token[2]);
+                                nickname=token[1];
                                 setTitle(nickname);
                             }
-                            //TODO подумать, а нужны ли эти, если с сервера все что надо приходит,
-/*
-                            if (str.startsWith("/chgnick_ok")) {
-                                changeNickController.showResult("/chgnick_ok");
-                            }
-                            if (str.startsWith("/chgnick_no")) {
-                                changeNickController.showResult("/chgnick_no");
-                            }*/
                         } else {
+                            //сообщения с сервера передаем в поле чата + пишем в лог
                             textArea.appendText(str + "\n");
+                            Logs.writeToLog( login, str);
                         }
                     }
                 } catch (IOException e) {
@@ -318,15 +320,9 @@ public class Controller implements Initializable {
         String msg = String.format("/chgnick %s %s", nickname, password );
         try {
             out.writeUTF(msg);
-
-            //TODO поменять костыль на что нибудь нормальное
-            tempnick=nickname;
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-
-
 }
 
