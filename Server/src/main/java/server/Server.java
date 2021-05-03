@@ -6,6 +6,8 @@ import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import static server.StartServer.logger;
+
 public class Server {
     private static final int PORT=8189;
     private final List<ClientHandler> clients;
@@ -26,12 +28,14 @@ public class Server {
 
         try {
             server = new ServerSocket(PORT);
-            System.out.println("Server started");
+            //System.out.println("Server started");
+            logger.info("Server started");
 
             while(true){
                 socket = server.accept();
                 System.out.println(socket.getLocalSocketAddress());
-                System.out.println("Client connect: "+ socket.getRemoteSocketAddress());
+                //System.out.println("Client connect: "+ socket.getRemoteSocketAddress());
+                logger.info("Client connect: "+ socket.getRemoteSocketAddress());
                 new ClientHandler(this, socket);
             }
 
