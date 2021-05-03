@@ -129,7 +129,7 @@ public class Controller implements Initializable {
                                 textArea.appendText("Добро пожаловать в чат" + "\nЕсли вы хотите сменить свой никнейм, " +
                                         "то кликните по нему в списке пользователей справа.\n");
                                 //100 записей из лога передаем в поле чата
-                                textArea.appendText(Logs.readLast100FromLog(login));
+                               // textArea.appendText(Logs.readLast100FromLog(login));
                                 break;
                             }
                             if (str.startsWith("/reg_ok")) {
